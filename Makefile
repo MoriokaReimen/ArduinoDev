@@ -10,9 +10,9 @@ CPU_FREQ = 16000000
 CFLAGS = -c -std=gnu99 -Os -Wall -ffunction-sections -fdata-sections -mmcu=atmega328p
 
 # linker setting
-LD = avr-gcc
+LD = avr-ld
 OBJFILES = $(addprefix build/, $(notdir $(CFILES:.c=.o)))
-LDFLAGS = -Os -mmcu=atmega328p -ffunction-sections -fdata-sections -Wl,--gc-sections
+LDFLAGS = -Os -mavr5
 
 #  objcopy setting
 OBJCOPY = avr-objcopy
