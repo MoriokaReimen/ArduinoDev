@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 # setting output file
-OUT = build/Sample.ihex
+OUT = build/Program.ihex
 
 # compiler setting
 CC = avr-gcc
@@ -20,9 +20,9 @@ OBJFLAGS = -O ihex -R .eeprom
 
 # avrdude setting
 AVRDUDE = avrdude
-PORT =
-AVRDUDEFLAGS = ./conf/avrdude.conf
-AVRDUDECONF = -C $(AVRDUDECONF) -v -V -p atmega328p -c arduino -b 115200 -P $(PORT) -D
+PORT = /dev/ttyACM0
+AVRDUDECONF = ./conf/avrdude.conf
+AVRDUDEFLAGS = -C $(AVRDUDECONF) -v -V -p atmega328p -carduino -b 115200 -P $(PORT) -D
 
 # Build Step Setting
 all : $(OUT)
