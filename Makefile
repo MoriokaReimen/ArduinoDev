@@ -5,7 +5,7 @@ OUT = build/Program.ihex
 
 # compiler setting
 CC = avr-gcc
-CFILES = $(wildcard src/*.c)
+CFILES = $(wildcard src/App/*.c)
 CPU_FREQ = 16000000
 CFLAGS = -c -std=gnu99 -Os -Wall -ffunction-sections -fdata-sections -mmcu=atmega328p
 
@@ -33,7 +33,7 @@ $(OUT) : $(OUT:.ihex=.elf)
 $(OUT:.ihex=.elf) : $(OBJFILES)
 	$(LD) $(LDFLAGS) $^ -o $@
 
-build/%.o : src/%.c
+build/%.o : src/App/%.c
 	$(CC) $(CFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
 
 upload : $(OUT)
