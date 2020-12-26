@@ -1,25 +1,48 @@
-TARGET_NAME = Sample
-SRC_FILES = \
-	Sample.c
+#!/usr/bin/make -f
 
-all : $(TARGET_NAME).ihex
+# setting output file
+OUT = build/Sample.ihex
 
-$(TARGET_NAME).ihex : $(TARGET_NAME).elf
-	avr-objcopy -O ihex -R .eeprom $^ $@
+# compiler setting
+CC = avr-gcc
+CFILES = $(wildcard src/*.c)
+CPU_FREQ = 16000000
+CFLAGS = -c -std=gnu99 -Os -Wall -ffunction-sections -fdata-sections -mmcu=atmega328p
 
-$(TARGET_NAME).elf : $(TARGET_NAME).o
-	avr-gcc -Os -mmcu=atmega328p -ffunction-sections -fdata-sections -Wl,--gc-sections $^ -o $@
+# linker setting
+LD = avr-gcc
+OBJFILES = $(addprefix build/, $(notdir $(CFILES:.c=.o)))
+LDFLAGS = -Os -mmcu=atmega328p -ffunction-sections -fdata-sections -Wl,--gc-sections
 
-$(TARGET_NAME).o : $(TARGET_NAME).c
-	avr-gcc -c -std=gnu99 -Os -Wall -ffunction-sections -fdata-sections -mmcu=atmega328p -DF_CPU=16000000 $^ -o $@
+#  objcopy setting
+OBJCOPY = avr-objcopy
+OBJFLAGS = -O ihex -R .eeprom 
 
-upload : $(TARGET_NAME).ihex
-	avrdude -C ./conf/avrdude.conf -p atmega328p -c PROGRAMMER_NAME -b 19600 -P PORT_NAME -U flash:w:$^:i
+# avrdude setting
+AVRDUDE = avrdude
+PORT =
+AVRDUDEFLAGS = ./conf/avrdude.conf
+AVRDUDECONF = -C $(AVRDUDECONF) -v -V -p atmega328p -c arduino -b 115200 -P $(PORT) -D
+
+# Build Step Setting
+all : $(OUT)
+
+$(OUT) : $(OUT:.ihex=.elf)
+	$(OBJCOPY) $(OBJFLAGS) $^ $@
+
+$(OUT:.ihex=.elf) : $(OBJFILES)
+	$(LD) $(LDFLAGS) $^ -o $@
+
+build/%.o : src/%.c
+	$(CC) $(CFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+
+upload : $(OUT)
+	$(AVRDUDE) $(AVRDUDEFLAGS) -U flash:w:$^:i
 
 clean :
-	rm -rf *.o
-	rm -rf *.ihex
-	rm -rf *.elf
+	rm -rf build/*.o
+	rm -rf build/*.ihex
+	rm -rf build/*.elf
 
 .PHONY : all upload clean
 
