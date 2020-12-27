@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Arduino_FreeRTOS.h>
+#include <queue.h>
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -12,11 +13,14 @@ void loop(void);
 
 void setup(void)
 {
-    xTaskCreate(serial_task, "Serial", 128, NULL, 1, NULL);
-    xTaskCreate(led_task,    "LED",    128, NULL, 2, NULL);
-    xTaskCreate(sensor_task, "Sensor", 128, NULL, 3, NULL);
+    QueueHandle_t queue = xQueueCreate(10, sizeof(int));
+    xTaskCreate(serial_task, "Serial", 128, &queue, 1, NULL);
+    xTaskCreate(led_task,    "LED",    128, &queue, 2, NULL);
+    xTaskCreate(sensor_task, "Sensor", 128, &queue, 3, NULL);
+    vTaskStartScheduler();
 }
 
 void loop(void)
 {
+    delay(100000);
 }
