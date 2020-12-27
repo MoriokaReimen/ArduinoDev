@@ -11,7 +11,8 @@ INCLUDE = \
 -I./src/App/ \
 -I./src/Arduino/ \
 -I./src/Atmega328P/ \
--I./src/FreeRTOS/
+-I./src/FreeRTOS/ \
+-I./src/CRC/ \
 
 
 # App Directory setting
@@ -31,6 +32,12 @@ ArduinoCFILES = $(wildcard src/Arduino/*.c)
 ArduinoCXXFILES = $(wildcard src/Arduino/*.cpp)
 ArduinoASMFILES = $(wildcard src/Arduino/*.S)
 ArduinoOBJFILES = $(addprefix build/, $(notdir $(ArduinoCFILES:.c=.o))) $(addprefix build/, $(notdir $(ArduinoCXXFILES:.cpp=.o))) $(addprefix build/, $(notdir $(ArduinoASMFILES:.S=.o)))
+
+# CRC Directory setting
+CRCCFILES = $(wildcard src/CRC/*.c)
+CRCCXXFILES = $(wildcard src/CRC/*.cpp)
+CRCASMFILES = $(wildcard src/CRC/*.S)
+CRCOBJFILES = $(addprefix build/, $(notdir $(CRCCFILES:.c=.o))) $(addprefix build/, $(notdir $(CRCCXXFILES:.cpp=.o))) $(addprefix build/, $(notdir $(CRCASMFILES:.S=.o)))
 
 # Assembler setting
 ASM = avra
@@ -68,7 +75,7 @@ all : $(OUT)
 $(OUT) : $(OUT:.ihex=.elf)
 	$(OBJCOPY) $(OBJFLAGS) $^ $@
 
-$(OUT:.ihex=.elf) : $(APPOBJFILES) build/libArduino.a build/libFreeRTOS.a 
+$(OUT:.ihex=.elf) : $(APPOBJFILES) build/libArduino.a build/libFreeRTOS.a build/libCRC.a
 	$(LD) $(LDFLAGS) $^ -o $@
 
 # App directroy build setting
@@ -107,9 +114,25 @@ build/%.o : src/Arduino/%.cpp
 build/%.o : src/Arduino/%.S
 	$(ASM) $(ASMFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
 
+# CRC directroy build setting
+build/libCRC.a : $(CRCOBJFILES)
+	$(AR) $(ARFLAGS) $@ $^
+
+build/%.o : src/CRC/%.c
+	$(CC) $(CFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+
+build/%.o : src/CRC/%.cpp
+	$(CXX) $(CXXFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+
+build/%.o : src/CRC/%.S
+	$(ASM) $(ASMFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+
+
+# Upload setting
 upload : $(OUT)
 	$(AVRDUDE) $(AVRDUDEFLAGS) -U flash:w:$^:i
 
+# clean up setting
 clean :
 	rm -rf build/*.a
 	rm -rf build/*.o
