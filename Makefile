@@ -45,9 +45,8 @@ CXX = avr-c++
 CXXFLAGS = -c $(INCLUDE) -std=c++11 -Os -Wall -ffunction-sections -fdata-sections -mmcu=atmega328p
 
 # linker setting
-LD = avr-ld
-me/kei/デスクトップ/Arduino/ArduinoDev/src/Arduino/wiring_pulse.S' 
-LDFLAGS = -Os -mavr5
+LD = avr-gcc
+LDFLAGS = -mmcu=atmega328p 
 
 # Archiver setting
 AR = avr-ar
@@ -69,7 +68,7 @@ all : $(OUT)
 $(OUT) : $(OUT:.ihex=.elf)
 	$(OBJCOPY) $(OBJFLAGS) $^ $@
 
-$(OUT:.ihex=.elf) : $(APPOBJFILES) build/libFreeRTOS.a build/libArduino.a
+$(OUT:.ihex=.elf) : $(APPOBJFILES) build/libArduino.a build/libFreeRTOS.a 
 	$(LD) $(LDFLAGS) $^ -o $@
 
 # App directroy build setting
