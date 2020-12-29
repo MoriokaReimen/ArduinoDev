@@ -1,4 +1,4 @@
-#include "crc.h"
+#include "crc.hpp"
 
 typedef uint8_t     BYTE;
 
@@ -104,10 +104,10 @@ static const CRC32 CRC32_TABLE[] =
     0x79B737BAU, 0x8BDCB4B9U, 0x988C474DU, 0x6AE7C44EU,
     0xBE2DA0A5U, 0x4C4623A6U, 0x5F16D052U, 0xAD7D5351U
 };
-CRC8 calc_crc8(const void* src, const size_t size)
+CRC8 calc_crc8(const void* src, const size_t size, const CRC8 init)
 {
     const BYTE* psrc = reinterpret_cast<const BYTE*>(src);
-    CRC8 crc = 0x00U;
+    CRC8 crc = init;
     for (size_t i = 0; i < size; i++)
     {
         crc = CRC8_TABLE[ (*psrc ^ crc) & 0xFFU ];
@@ -117,10 +117,10 @@ CRC8 calc_crc8(const void* src, const size_t size)
     return crc;
 }
 
-CRC32 calc_crc32(const void* src, const size_t size)
+CRC32 calc_crc32(const void* src, const size_t size, const CRC32 init)
 {
     const BYTE* psrc = reinterpret_cast<const BYTE*>(src);
-    CRC32 crc = 0x00000000U;
+    CRC32 crc = init;
 
     for (size_t i = 0; i < size; i++)
     {
