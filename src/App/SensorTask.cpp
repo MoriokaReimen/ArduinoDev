@@ -3,6 +3,7 @@
 #include <queue.h>
 #include <avr/io.h>
 #include <task.h>
+#include <math.h>
 
 void sensor_task( void *pvParameters )
 {
@@ -12,8 +13,9 @@ void sensor_task( void *pvParameters )
 
     while (true)
     {
-        const int sensor_val = analogRead(A0);
-        xQueueSend(*queue, &count, pdMS_TO_TICKS(5));
+        int sensor_val = analogRead(A0);
+        sensor_val = 500 * sin((double)count / 180.0 * 3.14);
+        xQueueSend(*queue, &sensor_val, pdMS_TO_TICKS(5));
         count++;
 
         xTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(5));

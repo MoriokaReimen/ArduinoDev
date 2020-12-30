@@ -14,9 +14,10 @@ void serial_task( void *pvParameters )
     while (true)
     {
         int sensor_val = 0;
-        xQueueReceive(*queue, &sensor_val, pdMS_TO_TICKS(50));
+        xQueueReceive(*queue, &sensor_val, portMAX_DELAY);
         Packet packet;
         packet.data1 = sensor_val;
+        packet.data2 = xTaskGetTickCount();
         Serial.write(reinterpret_cast<const uint8_t*>(&packet), sizeof(Packet));
     }
 }
