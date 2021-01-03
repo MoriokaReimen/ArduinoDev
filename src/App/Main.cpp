@@ -13,7 +13,7 @@ void loop(void);
 
 void setup(void)
 {
-    QueueHandle_t queue = xQueueCreate(10, sizeof(int));
+    QueueHandle_t queue = xQueueCreate(1, sizeof(int));
     xTaskCreate(serial_task, "Serial", 128, &queue, 3, NULL);
     xTaskCreate(led_task,    "LED",    128, &queue, 2, NULL);
     xTaskCreate(sensor_task, "Sensor", 128, &queue, 1, NULL);

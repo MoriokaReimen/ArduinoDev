@@ -18,6 +18,9 @@ void serial_task( void *pvParameters )
         Packet packet;
         packet.data1 = sensor_val;
         packet.data2 = xTaskGetTickCount();
-        Serial.write(reinterpret_cast<const uint8_t*>(&packet), sizeof(Packet));
+        if (Serial)
+        {
+            Serial.write(reinterpret_cast<const uint8_t*>(&packet), sizeof(Packet));
+        }
     }
 }

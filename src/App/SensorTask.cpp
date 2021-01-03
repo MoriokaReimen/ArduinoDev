@@ -8,8 +8,8 @@
 void sensor_task( void *pvParameters )
 {
     QueueHandle_t* queue = static_cast<QueueHandle_t*>(pvParameters);
-    int count = 0;
     TickType_t xLastWakeTime = 0;
+    int count = 0;
 
     while (true)
     {
