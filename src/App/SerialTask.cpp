@@ -22,5 +22,6 @@ void serial_task( void *pvParameters )
         {
             Serial.write(reinterpret_cast<const uint8_t*>(&packet), sizeof(Packet));
         }
+        vTaskDelay(pdMS_TO_TICKS(5));
     }
 }
