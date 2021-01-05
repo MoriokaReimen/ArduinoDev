@@ -3,6 +3,7 @@
 #include <queue.h>
 #include <avr/io.h>
 #include <util/delay.h>
+#include <crc.hpp>
 
 #include "Packet.hpp"
 
@@ -18,6 +19,9 @@ void serial_task( void *pvParameters )
         Packet packet;
         packet.data1 = sensor_val;
         packet.data2 = xTaskGetTickCount();
+        CRC32 crc = calc_crc32(&packet.data1, sizeof(packet.data1));
+        crc = calc_crc32(&packet.data2, sizeof(packet.data2), crc);
+        packet.crc = crc;
         if (Serial)
         {
             Serial.write(reinterpret_cast<const uint8_t*>(&packet), sizeof(Packet));
