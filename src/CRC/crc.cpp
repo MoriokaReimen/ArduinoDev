@@ -1,8 +1,9 @@
 #include "crc.hpp"
+#include <avr/pgmspace.h>
 
 typedef uint8_t     BYTE;
 
-static const CRC8 CRC8_TABLE[] =
+static const CRC8 CRC8_TABLE[] PROGMEM =
 {
     0x00U, 0x2FU, 0x5EU, 0x71U, 0xBCU, 0x93U, 0xE2U, 0xCDU,
     0x57U, 0x78U, 0x09U, 0x26U, 0xEBU, 0xC4U, 0xB5U, 0x9AU,
@@ -37,7 +38,7 @@ static const CRC8 CRC8_TABLE[] =
     0xD8U, 0xF7U, 0x86U, 0xA9U, 0x64U, 0x4BU, 0x3AU, 0x15U,
     0x8FU, 0xA0U, 0xD1U, 0xFEU, 0x33U, 0x1CU, 0x6DU, 0x42U
 };
-static const CRC32 CRC32_TABLE[] =
+static const CRC32 CRC32_TABLE[] PROGMEM =
 {
     0x00000000U, 0xF26B8303U, 0xE13B70F7U, 0x1350F3F4U,
     0xC79A971FU, 0x35F1141CU, 0x26A1E7E8U, 0xD4CA64EBU,
@@ -110,7 +111,7 @@ CRC8 calc_crc8(const void* src, const size_t size, const CRC8 init)
     CRC8 crc = init;
     for (size_t i = 0; i < size; i++)
     {
-        crc = CRC8_TABLE[ (*psrc ^ crc) & 0xFFU ];
+        crc = pgm_read_byte(&CRC8_TABLE[ (*psrc ^ crc) & 0xFFU ]);
         psrc++;
     }
 
@@ -124,7 +125,7 @@ CRC32 calc_crc32(const void* src, const size_t size, const CRC32 init)
 
     for (size_t i = 0; i < size; i++)
     {
-        crc = (crc >> 8) ^ CRC32_TABLE[ (*psrc ^ crc) & 0xFFU ];
+        crc = (crc >> 8) ^ pgm_read_dword(&CRC32_TABLE[ (*psrc ^ crc) & 0xFFU ]);
         psrc++;
     }
 

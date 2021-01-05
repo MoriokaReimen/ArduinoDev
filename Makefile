@@ -45,15 +45,15 @@ ASMFLAGS = -c $(INCLUDE) -Wall -ffunction-sections -fdata-sections -mmcu=atmega3
 
 # C compiler setting
 CC = avr-gcc
-CFLAGS = -c $(INCLUDE) -std=gnu99 -Os -Wall -ffunction-sections -fdata-sections -mmcu=atmega328p
+CFLAGS = -c $(INCLUDE) -std=gnu99 -Wa,-adhln -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=atmega328p
 
 # C++ compiler setting
 CXX = avr-c++
-CXXFLAGS = -c $(INCLUDE) -std=c++11 -Os -Wall -ffunction-sections -fdata-sections -mmcu=atmega328p
+CXXFLAGS = -c $(INCLUDE) -std=c++17 -Wa,-adhln -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=atmega328p
 
 # linker setting
 LD = avr-gcc
-LDFLAGS = -mmcu=atmega328p 
+LDFLAGS = -mmcu=atmega328p -Wl,-Map=build/Memory.map
 
 # Archiver setting
 AR = avr-ar
@@ -80,52 +80,52 @@ $(OUT:.ihex=.elf) : $(APPOBJFILES) build/libArduino.a build/libFreeRTOS.a build/
 
 # App directroy build setting
 build/%.o : src/App/%.c
-	$(CC) $(CFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+	$(CC) $(CFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@ > build/$(@F).list
 
 build/%.o : src/App/%.cpp
-	$(CXX) $(CXXFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+	$(CXX) $(CXXFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@ > build/$(@F).list
 
 build/%.o : src/App/%.S
-	$(ASM) $(ASMFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+	$(ASM) $(ASMFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@ > build/$(@F).list
 
 # FreeRTOS directroy build setting
 build/libFreeRTOS.a : $(FreeRTOSOBJFILES)
 	$(AR) $(ARFLAGS) $@ $^
 
 build/%.o : src/FreeRTOS/%.c
-	$(CC) $(CFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+	$(CC) $(CFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@ > build/$(@F).list
 
 build/%.o : src/FreeRTOS/%.cpp
-	$(CXX) $(CXXFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+	$(CXX) $(CXXFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@ > build/$(@F).list
 
 build/%.o : src/FreeRTOS/%.S
-	$(ASM) $(ASMFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+	$(ASM) $(ASMFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@ > build/$(@F).list
 
 # Arduino directroy build setting
 build/libArduino.a : $(ArduinoOBJFILES)
 	$(AR) $(ARFLAGS) $@ $^
 
 build/%.o : src/Arduino/%.c
-	$(CC) $(CFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+	$(CC) $(CFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@ > build/$(@F).list
 
 build/%.o : src/Arduino/%.cpp
-	$(CXX) $(CXXFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+	$(CXX) $(CXXFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@ > build/$(@F).list
 
 build/%.o : src/Arduino/%.S
-	$(ASM) $(ASMFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+	$(ASM) $(ASMFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@ > build/$(@F).list
 
 # CRC directroy build setting
 build/libCRC.a : $(CRCOBJFILES)
 	$(AR) $(ARFLAGS) $@ $^
 
 build/%.o : src/CRC/%.c
-	$(CC) $(CFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+	$(CC) $(CFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@ > build/$(@F).list
 
 build/%.o : src/CRC/%.cpp
-	$(CXX) $(CXXFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+	$(CXX) $(CXXFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@ > build/$(@F).list
 
 build/%.o : src/CRC/%.S
-	$(ASM) $(ASMFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@
+	$(ASM) $(ASMFLAGS) -DF_CPU=$(CPU_FREQ) $^ -o $@ > build/$(@F).list
 
 
 # Upload setting
@@ -138,6 +138,7 @@ clean :
 	rm -rf build/*.o
 	rm -rf build/*.ihex
 	rm -rf build/*.elf
+	rm -rf build/*.list
 
 .PHONY : all upload clean
 
