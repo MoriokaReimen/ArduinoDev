@@ -6,6 +6,7 @@
 #include <crc.hpp>
 
 #include "Packet.hpp"
+#include "Constant.hpp"
 
 void serial_task( void *pvParameters )
 {
@@ -26,6 +27,6 @@ void serial_task( void *pvParameters )
         {
             Serial.write(reinterpret_cast<const uint8_t*>(&packet), sizeof(Packet));
         }
-        vTaskDelay(pdMS_TO_TICKS(5));
+        vTaskDelay(pdMS_TO_TICKS(CONTROL_PERIOD_MS));
     }
 }

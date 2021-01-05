@@ -4,6 +4,7 @@
 #include <avr/io.h>
 #include <task.h>
 #include <math.h>
+#include "Constant.hpp"
 
 void sensor_task( void *pvParameters )
 {
@@ -15,9 +16,9 @@ void sensor_task( void *pvParameters )
     {
         int sensor_val = analogRead(A0);
         sensor_val = 500 * sin((double)count / 180.0 * 3.14);
-        xQueueSend(*queue, &sensor_val, pdMS_TO_TICKS(5));
+        xQueueSend(*queue, &sensor_val, portMAX_DELAY);
         count++;
 
-        xTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(5));
+        xTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(CONTROL_PERIOD_MS));
     }
 }
